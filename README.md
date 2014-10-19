@@ -22,3 +22,6 @@ and call it to display hello world (x86_64 architecture)
 
 - [NASM](http://www.nasm.us/)
 - [QEMU](http://wiki.qemu.org/Main_Page)
+
+### Resources
+- http://www.simplecpu.com/Binary.html
