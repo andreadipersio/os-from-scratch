@@ -71,32 +71,46 @@ This is the starting offset in the file for the next 16 byte that follows.
 
 `eb 20` correspond to line 5 of *boot_sect.asm*: `jmp .start`, it's called a *Relative Short Jump*.
 
-Where *eb* is the opcode for a JMP instruction and *20* is the starting offset.
-20 is an hex number and it correspond to the hexdump line starting with 00000020.
+*eb* is the opcode for a JMP instruction, *20* is destination offset.
+So this instruction will move the instruction pointer to the bytes starting at file offset 20,
+which correspond to the hexdump line starting 00000020 and to the section *start* of our *boot_sect.asm*.
 
---- TODO: explain why the Jump
-
-If you want to make a nifty experiment, open *boot_sect.asm* and add some `nop` instruction after line 24.
+We can play with JMP instruction by opening *boot_sect.asm* and add some `nop` instruction after line 24.
 Recompile again and you will that now the first bytes of the file are `eb 23`, meaning that the position
 of the start label is changed.
 
-What come after `eb 20` is 
+We are going to store 'Hello world!' string and our string printing code at the top of the file.
+We want to run this code only inside our main loop so this is why we perform a jmp to *start*.
+
+The next sequence of bytes is:
 
     48 65 6c 6c 6f 20 77 6f  72 6c 64 21 00 b1
 
-This is a 13 byte sequence, which correspond to the string 'Hello world!'. While we see
-only 12 characters, internally we need a string terminator, which on our case is '00', adding effectively one byte 
-to our string..
-In hexdump canonical view '00' is always interpreted as '.'
-
-But what does it mean when I say *correspond to the string 'Hello world!*?
-
-*hexdump* assume that character are encoded using ASCII. Since an ASCII character is 1 byte,
-we can take the hex value of this byte (or octal, binary, decimal) and search for it in an 
+On the right you can see the sentence 'Hello world!' in the canonical view.
+The canonical view is where hexdump try to match the bytes value to the 
 [ASCII Table](http://web.cs.mun.ca/~michael/c/ascii-table.html).
-We will see that each byte (space included) correspond to an ASCII character in order to 
-create the words 'Hello' 'World'.
 
---- TODO: eb 00 = mov cl, 0
+Each byte from 48 to 00 correspond to a character in the ASCII table. You can
+manually search the ascii table for the correspondence between characters and hex values.
+*00* is called a NULL string terminator and it marks the end of the string.
 
-[work in progress]
+Before going on let's stop for a moment to notice some interesting things.
+
+- comments and empty lines are not translated to machine code
+- the machine code file contains instructions in the same order as our assembly file, one after the other, from 
+top to bottom.
+
+Back to our machine code.
+The next two bytes, `b1 00` corresponds to `mov cl, 0` instruction.
+`b0` is the opcode for `mov cl` and 00 is the value we want to put into register *cl*.
+
+You can probably guess which instructions is represented by the two bytes that follows.
+Yes, `b4 0e` represent `mov ah, 0x0E`, where `b4` is the opcode for `mov ah` and 0e is the value we 
+want to store in the register.
+
+Notice how machine code have no notion of labels. The last 4 bytes we read belong to the *print* label yet we cannot find nothing about them in our machine code. In fact labels are just a facility which make easier for programmer to not worry about memory location. 
+Every time the compiler find a reference to a label, it replace the label with its memory location. We already saw this happens. Remember the first two bytes of our machine code? 
+
+    eb 20   ->   jmp start
+
+20 is the memory offset where we can find the code belonging to the start label.
