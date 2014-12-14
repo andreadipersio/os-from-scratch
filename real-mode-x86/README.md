@@ -1,6 +1,16 @@
-### Generate the binary file
-Using nasm, you can generate the binary file for your hello world operating system
-using the following command
+### Requirements
+You need to install NASM and QEMU
+If you are on a OSX use brew:
+
+    brew install nasm
+    brew install qemu
+
+### Run it!
+Running `make` will invoke nasm to create our image file
+and launch QEMU.
+
+### How the image file is generated
+When calling make, the following command is invoked:
 
 	nasm boot_sect.asm -f bin -o boot_sect.bin
 

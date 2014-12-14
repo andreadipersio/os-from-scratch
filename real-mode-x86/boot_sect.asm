@@ -48,6 +48,6 @@ times 510-($-$$) db 0   ; make boot sector fit 512 bytes
                         ; which equal to the size of the file at this point.
                         ; $$ represent the section offset (since we don't have any section is 0)
 
-dw 0xaa55               ; magic number / boot signature
-                        ; most BIOSes validate a MBR by checking that the two bytes at 
-                        ; offset 1FE (510) correspond to the boot signature
+dw 0xaa55               ; boot sector signature
+                        ; most BIOSes validate a boot sector by checking that the two bytes at 
+                        ; offset 1FE (510) correspond to this boot sector signature
